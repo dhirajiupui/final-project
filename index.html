@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>The Kernel of Truth :: Home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="Web Design Final">
+<meta name="keywords" content="HTML,CSS,XML,JavaScript">
+<meta name="author" content="THE KERNEL OF TRUTH">
+
+<link href="kernel.css" rel="stylesheet">
+
+   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"> </script>   
+<link rel="icon" href="faveico.ico" type="image/x-icon">
+<script type="text/javascript" src="Image-Slider-Pager.js"></script>
+
+<!--<link rel="stylesheet" type="text/css" href="Image-Slider-Pager.css">-->
+
+  <script>
+//1. set ul width 
+//2. image when click prev/next button
+var ul;
+var liItems;
+var imageNumber;
+var imageWidth;
+var prev, next;
+var currentPostion = 0;
+var currentImage = 0;
+
+
+function init(){
+	ul = document.getElementById('image_slider');
+	liItems = ul.children;
+	imageNumber = liItems.length;
+	imageWidth = liItems[0].children[0].clientWidth;
+	ul.style.width = parseInt(imageWidth * imageNumber) + 'px';
+	prev = document.getElementById("prev");
+	next = document.getElementById("next");
+	generatePager(imageNumber);
+	//.onclike = slide(-1) will be fired when onload;
+	/*
+	prev.onclick = function(){slide(-1);};
+	next.onclick = function(){slide(1);};*/
+	prev.onclick = function(){ onClickPrev();};
+	next.onclick = function(){ onClickNext();};
+}
+
+function animate(opts){
+	var start = new Date;
+	var id = setInterval(function(){
+		var timePassed = new Date - start;
+		var progress = timePassed / opts.duration;
+		if (progress > 1){
+			progress = 1;
+		}
+		var delta = opts.delta(progress);
+		opts.step(delta);
+		if (progress == 1){
+			clearInterval(id);
+			opts.callback();
+		}
+	}, opts.delay || 17);
+	//return id;
+}
+
+function slideTo(imageToGo){
+	var direction;
+	var numOfImageToGo = Math.abs(imageToGo - currentImage);
+	// slide toward left
+
+	direction = currentImage > imageToGo ? 1 : -1;
+	currentPostion = -1 * currentImage * imageWidth;
+	var opts = {
+		duration:1000,
+		delta:function(p){return p;},
+		step:function(delta){
+			ul.style.left = parseInt(currentPostion + direction * delta * imageWidth * numOfImageToGo) + 'px';
+		},
+		callback:function(){currentImage = imageToGo;}	
+	};
+	animate(opts);
+}
+
+function onClickPrev(){
+	if (currentImage == 0){
+		slideTo(imageNumber - 1);
+	} 		
+	else{
+		slideTo(currentImage - 1);
+	}		
+}
+
+function onClickNext(){
+	if (currentImage == imageNumber - 1){
+		slideTo(0);
+	}		
+	else{
+		slideTo(currentImage + 1);
+	}		
+}
+
+function generatePager(imageNumber){	
+	var pageNumber;
+	var pagerDiv = document.getElementById('pager');
+	for (i = 0; i < imageNumber; i++){
+		var li = document.createElement('li');
+		pageNumber = document.createTextNode(parseInt(i + 1));
+		li.appendChild(pageNumber);
+		pagerDiv.appendChild(li);
+		// add event inside a loop, closure issue.
+		li.onclick = function(i){
+			return function(){
+				slideTo(i);
+			}
+		}(i);
+	}	
+	var computedStyle = document.defaultView.getComputedStyle(li, null);
+	//border width 1px; offsetWidth = 22
+	var liWidth = parseInt(li.offsetWidth);
+	var liMargin = parseInt(computedStyle.margin.replace('px',""));
+	pagerDiv.style.width = parseInt((liWidth + liMargin * 2) * imageNumber) + 'px';
+}
+window.onload = init;
+
+
+  </script>
+ 
+</head>
+
+<!--http://www.colourlovers.com/palette/953498/Headache Color palette-->
+
+<body>
+<div id="wrapper"> 
+<div id="logoimg"><a href="index.html"><img src="kerneldetective.png" width="220" height="137" alt="Kernel of Truth Logo"></a></div>
+
+   <header><a href="index.html">
+    <h1>The Kernel of Truth</h1></a>
+   <span>One kernel prevails!</span>
+   </header>
+   
+  <nav>
+   <ul>
+     <li><a href="about.html">About</a></li> 
+    <li><a href="shop.html">Shop</a>
+    <ul>
+	     <li><a href="Regular.html">Regular</a></li>
+	     <li><a href="Savory.html">Savory</a></li>
+	     <li><a href="Sweet.html">Sweet</a></li>
+	   </ul></li>
+       <li><a href="prices.html">Pricing</a></li>
+	<li><a href="Reviews.html">Reviews</a></li>
+	  <li><a href="directions.html">Directions</a></li>
+	  <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main> 
+   
+  		<div class="container">
+			<div class="slider_wrapper">
+				<ul id="image_slider">
+					<li><img src="popcorn2.jpg" alt=""></li>
+					<li><img src="popcorn1.jpg" alt=""></li>
+					<li><img src="popcorn3.jpg" alt=""></li>
+					<li><img src="popcorn4.jpg" alt=""></li>
+					<li><img src="popcorn5.jpg" alt=""></li>
+					<li><img src="popcorn6.jpg" alt=""></li>
+				</ul>					
+				<span class="nvgt" id="prev"></span>
+				<span class="nvgt" id="next"></span>		
+			</div>
+			<ul id="pager">
+			</ul>
+		</div>  
+  <br>
+ 
+ 
+  </main> 
+   <footer>THE KERNEL OF TRUTH CORP.
+   </footer>
+</div> 
+</body>
+</html>
+
+
